@@ -18,7 +18,7 @@
 #   - v.1.0 Joe Farage, 23.01.2015
 #   - v.1.1 Joe Farage, 08.04.2015:   support for new Adobe Acrobat Reader DC
 #   - v.1.2 Steve Miller, 10.12.2015: umount and other minor fixes
-#	  - v.1.3 Steve Miller, 16.12.2015: Updated to copy echo commands into JSS policy logs
+#	- v.1.3 Steve Miller, 16.12.2015: Updated to copy echo commands into JSS policy logs
 #
 ####################################################################################################
 # Script to download and install Adobe Reader.
@@ -100,9 +100,9 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
 
     # If Adobe Reader is up to date already, just log it and exit.       
     else
-    	/bin/echo "Adobe Reader is already up to date, running ${currentinstalledver}."
-      /bin/echo "`date`: Adobe Reader is already up to date, running ${currentinstalledver}." >> ${logfile}
-      /bin/echo "--" >> ${logfile}
+        /bin/echo "Adobe Reader is already up to date, running ${currentinstalledver}."
+        /bin/echo "`date`: Adobe Reader is already up to date, running ${currentinstalledver}." >> ${logfile}
+        /bin/echo "--" >> ${logfile}
     fi  
 else
     /bin/echo "`date`: ERROR: This script is for Intel Macs only." >> ${logfile}
