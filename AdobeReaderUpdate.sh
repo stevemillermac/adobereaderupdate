@@ -13,13 +13,13 @@
 #
 # HISTORY
 #
-#   Version: 1.3
+#   Version: 1.4
 #
 #   - v.1.0 Joe Farage, 23.01.2015
-#   - v.1.1 Joe Farage, 08.04.2015 : support for new Adobe Acrobat Reader DC
-#   - v.1.2 Steve Miller, 10.12.2015 : umount and other minor fixes
-#	- v.1.3 Steve Miller, 16.12.2015	Updated to copy echo commands into JSS policy logs
-#	- v.1.4	Steve Miller, 21.12.2015:	Updated umount command to use hdiutil. 10.9 issues previous command
+#   - v.1.1 Joe Farage, 08.04.2015:	support for new Adobe Acrobat Reader DC
+#   - v.1.2 Steve Miller, 10.12.2015:	umount and other minor fixes
+#   - v.1.3 Steve Miller, 16.12.2015:	Updated to copy echo commands into JSS policy logs
+#   - v.1.4 Steve Miller, 21.12.2015:	Updated umount command to use hdiutil. 10.9 issues previous command
 #
 ####################################################################################################
 # Script to download and install Adobe Reader.
