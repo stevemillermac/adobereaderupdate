@@ -16,7 +16,7 @@
 #   Version: 1.4
 #
 #   - v.1.0 Joe Farage, 23.01.2015
-#   - v.1.1 Joe Farage, 08.04.2015:	support for new Adobe Acrobat Reader DC
+#   - v.1.1 Joe Farage, 08.04.2015:	Support for new Adobe Acrobat Reader DC
 #   - v.1.2 Steve Miller, 10.12.2015:	umount and other minor fixes
 #   - v.1.3 Steve Miller, 16.12.2015:	Updated to copy echo commands into JSS policy logs
 #   - v.1.4 Steve Miller, 21.12.2015:	Updated umount command to use hdiutil. 10.9 issues previous command
@@ -58,12 +58,11 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
         echo "Adobe Reader DC is not installed"
     fi
 
-
     ARCurrVersNormalized=$( echo $latestver | sed -e 's/[.]//g' )
     dmgfile="AcroRdrDC_${ARCurrVersNormalized}_MUI.dmg"
-	dmgmount="AcroRdrDC_${ARCurrVersNormalized}_MUI"
-	
-	
+    dmgmount="AcroRdrDC_${ARCurrVersNormalized}_MUI"
+    mntpoint=`diskutil list | grep "AcroRdrDC" | awk '{print $6}' `
+
     echo "ARCurrVersNormalized: $ARCurrVersNormalized"
     url1="http://ardownload.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ARCurrVersNormalized}/AcroRdrDC_${ARCurrVersNormalized}_MUI.dmg"
     url2=""
@@ -84,9 +83,13 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
         /bin/echo "`date`: Installing..." >> ${logfile}
         /usr/sbin/installer -pkg /Volumes/AcroRdrDC_${ARCurrVersNormalized}_MUI/AcroRdrDC_${ARCurrVersNormalized}_MUI.pkg -target / > /dev/null
 
+        #Unmount DMG and delete tmp files
         /bin/sleep 10
         /bin/echo "`date`: Unmounting installer disk image." >> ${logfile}
-        diskutil unmount $dmgmount -quiet -force
+        mntpoint=`diskutil list | grep "AcroRdrDC" | awk '{print $6}' `
+        /bin/echo The mount point is "$mntpoint"
+        hdiutil unmount $mntpoint -force -quiet
+        hdiutil detach $mntpoint -force -quiet
         /bin/sleep 10
         /bin/echo "`date`: Deleting disk image." >> ${logfile}
         /bin/rm /tmp/${dmgfile}
@@ -97,7 +100,7 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
             /bin/echo "SUCCESS: Adobe Reader has been updated to version ${newlyinstalledver}"
             /bin/echo "`date`: SUCCESS: Adobe Reader has been updated to version ${newlyinstalledver}" >> ${logfile}
         else
-        	/bin/echo "ERROR: Adobe Reader update unsuccessful, version remains at ${currentinstalledver}."
+            /bin/echo "ERROR: Adobe Reader update unsuccessful, version remains at ${currentinstalledver}."
             /bin/echo "`date`: ERROR: Adobe Reader update unsuccessful, version remains at ${currentinstalledver}." >> ${logfile}
             /bin/echo "--" >> ${logfile}
             exit 1
@@ -105,7 +108,7 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
 
     # If Adobe Reader is up to date already, just log it and exit.       
     else
-    	/bin/echo "Adobe Reader is already up to date, running ${currentinstalledver}."
+        /bin/echo "Adobe Reader is already up to date, running ${currentinstalledver}."
         /bin/echo "`date`: Adobe Reader is already up to date, running ${currentinstalledver}." >> ${logfile}
         /bin/echo "--" >> ${logfile}
     fi  
