@@ -23,14 +23,15 @@
 #   Based on the threads:
 #   https://jamfnation.jamfsoftware.com/viewProductFile.html?id=42&fid=761
 #   https://jamfnation.jamfsoftware.com/discussion.html?id=12042
-#   Version: 1.5
+#   Version: 1.6
 #
 #   - v.1.0 Joe Farage, 23.01.2015
 #   - v.1.1 Joe Farage, 08.04.2015 : support for new Adobe Acrobat Reader DC
 #   - v.1.2 Steve Miller, 15.12.2015
 #   - v.1.3 Luis Lugo, 07.04.2016 : updates both Reader and Reader DC to the latest Reader DC
 #   - v.1.4 Luis Lugo, 28.04.2016 : attempts an alternate download if the first one fails
-#   - v.1.5 Steve Miller, 15.12.2016 : checking if installed is greater than online, exit code updated
+#	- v.1.5	Steve Miller, 15.12.2016 : Adobe checking if installed is greater than online, exit code updated
+#	- v.1.6	Steve Miller, 17.02.2017 : Fixed install when not installed, changed to touch command for log creation.
 #
 ####################################################################################################
 # Script to download and install Adobe Reader DC.
@@ -54,7 +55,7 @@ echoFunc () {
     if [ -e "/Library/Logs/AdobeReaderDCUpdateScript.log" ]; then
         echo $(fHeader) "$1" >> "/Library/Logs/AdobeReaderDCUpdateScript.log"
     else
-        cat > "/Library/Logs/AdobeReaderDCUpdateScript.log"
+        touch "/Library/Logs/AdobeReaderDCUpdateScript.log"
         if [ -e "/Library/Logs/AdobeReaderDCUpdateScript.log" ]; then
             echo $(fHeader) "$1" >> "/Library/Logs/AdobeReaderDCUpdateScript.log"
         else
@@ -72,6 +73,7 @@ echoFunc () {
 exitFunc () {
     case $1 in
         0) exitCode="0 - SUCCESS: Adobe Reader up to date with version $2";;
+        #1) exitCode="0 - INFO: Adobe Reader DC is current! Version: $2";;
         3) exitCode="3 - INFO: Adobe Reader DC NOT installed!";;
         4) exitCode="4 - ERROR: Adobe Reader DC update unsuccessful, version remains at $2";;
         5) exitCode="5 - ERROR: Adobe Reader (DC) is running or was attempted to be installed manually and user deferred install.";;
@@ -200,7 +202,7 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
     else
         currentinstalledapp="None"
         currentinstalledver="N/A"
-        exitFunc 0
+        echoFunc "Adobe Reader (DC) Version is not installed, beginning install now..."
     fi
 
     # Build URL and dmg file name
