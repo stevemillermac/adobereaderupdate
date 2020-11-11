@@ -32,6 +32,7 @@
 #   - v.1.4 Luis Lugo, 28.04.2016 : attempts an alternate download if the first one fails
 #	- v.1.5	Steve Miller, 15.12.2016 : Adobe checking if installed is greater than online, exit code updated
 #	- v.1.6	Steve Miller, 17.02.2017 : Fixed install when not installed, changed to touch command for log creation.
+#   - v.1.7 Matt K., 11.11.2020 : Fixed web query to find latest version.
 #
 ####################################################################################################
 # Script to download and install Adobe Reader DC.
@@ -167,12 +168,15 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
 
     ## Set the User Agent string for use with curl
     userAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X ${OSvers_URL}) AppleWebKit/535.6.2 (KHTML, like Gecko) Version/5.2 Safari/535.6.2"
+    infourl="https://get2.adobe.com/reader/webservices/json/standalone/?platform_type=Macintosh&platform_dist=OSX&platform_arch=x86-32&platform_misc=10.12.0&language=English&eventname=readerotherversions"
 
     # Get the latest version of Reader available from Adobe's About Reader page.
     latestver=``
     while [ -z "$latestver" ]
     do
-        latestver=`curl -s -L -A "$userAgent" https://get.adobe.com/reader/ | grep "<strong>Version" | /usr/bin/sed -e 's/<[^>][^>]*>//g' | /usr/bin/awk '{print $2}' | cut -c 3-14`
+        versinfo=$(curl -s -L -A "$userAgent" -H "X-Requested-With: XMLHttpRequest" ${infourl})
+        url1=$(echo "${versinfo}" | python2 -c "import sys, json; print json.load(sys.stdin)[0]['download_url']")
+        latestver=$(echo "${versinfo}" | python2 -c "import sys, json; print json.load(sys.stdin)[0]['Version']")
     done
 
     echoFunc "Latest Adobe Reader DC Version is: $latestver"
@@ -208,7 +212,6 @@ if [ '`/usr/bin/uname -p`'="i386" -o '`/usr/bin/uname -p`'="x86_64" ]; then
     # Build URL and dmg file name
     ARCurrVersNormalized=$( echo $latestver | sed -e 's/[.]//g' )
     echoFunc "ARCurrVersNormalized: $ARCurrVersNormalized"
-    url1="http://ardownload.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ARCurrVersNormalized}/AcroRdrDC_${ARCurrVersNormalized}_MUI.dmg"
     url2=""
     url=`echo "${url1}${url2}"`
     echoFunc "Latest version of the URL is: $url"
